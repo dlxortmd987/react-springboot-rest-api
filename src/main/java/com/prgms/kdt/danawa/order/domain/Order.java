@@ -9,7 +9,8 @@ import java.util.List;
 
 public class Order {
     private final long orderId;
-    private final long userId;
+    private final long customerId;
+    private final long sellerId;
     private final long productId;
     private final Email email;
     private final Address address;
@@ -18,9 +19,10 @@ public class Order {
     private OrderStatus orderStatus;
     private final LocalDateTime createdAt;
 
-    public Order(long orderId, long userId, long productId, Email email, Address address, PostCode postcode, List<OrderItem> orderItems, OrderStatus orderStatus, LocalDateTime createdAt) {
+    public Order(long orderId, long customerId, long sellerId, long productId, Email email, Address address, PostCode postcode, List<OrderItem> orderItems, OrderStatus orderStatus, LocalDateTime createdAt) {
         this.orderId = orderId;
-        this.userId = userId;
+        this.customerId = customerId;
+        this.sellerId = sellerId;
         this.productId = productId;
         this.email = email;
         this.address = address;
