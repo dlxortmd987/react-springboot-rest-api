@@ -12,16 +12,18 @@ public class Order {
     private final long productId;
     private final Email email;
     private final Address address;
+    private final String postcode;
     private final List<OrderItems> orderItems;
     private OrderStatus orderStatus;
     private final LocalDateTime createdAt;
 
-    public Order(long orderId, long userId, long productId, Email email, Address address, List<OrderItems> orderItems, OrderStatus orderStatus, LocalDateTime createdAt) {
+    public Order(long orderId, long userId, long productId, Email email, Address address, String postcode, List<OrderItems> orderItems, OrderStatus orderStatus, LocalDateTime createdAt) {
         this.orderId = orderId;
         this.userId = userId;
         this.productId = productId;
         this.email = email;
         this.address = address;
+        this.postcode = postcode;
         this.orderItems = orderItems;
         this.orderStatus = orderStatus;
         this.createdAt = createdAt;
