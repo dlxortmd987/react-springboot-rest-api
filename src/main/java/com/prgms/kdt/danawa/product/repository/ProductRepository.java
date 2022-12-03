@@ -10,7 +10,7 @@ public interface ProductRepository {
 
     Optional<Product> findById(long productId);
 
-    List<Product> findProductsByUserId(long userId);
+    List<Product> findProductsBySellerId(long userId);
 
     Product insert(Product product);
 

@@ -77,7 +77,7 @@ class ProductJdbcRepositoryTest {
         Product insertedProduct3 = productRepository.insert(product3);
 
         // when
-        List<Product> products = productRepository.findProductsByUserId(1);
+        List<Product> products = productRepository.findProductsBySellerId(1);
 
         // then
         assertThat(List.of(insertedProduct1, insertedProduct2))

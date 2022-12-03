@@ -81,9 +81,9 @@ public class ProductJdbcRepository implements ProductRepository {
     }
 
     @Override
-    public List<Product> findProductsByUserId(long userId) {
+    public List<Product> findProductsBySellerId(long sellerId) {
         return jdbcTemplate.query("SELECT * FROM product WHERE seller_id = :sellerId",
-                Collections.singletonMap("sellerId", userId),
+                Collections.singletonMap("sellerId", sellerId),
                 PRODUCT_ROW_MAPPER
         );
     }

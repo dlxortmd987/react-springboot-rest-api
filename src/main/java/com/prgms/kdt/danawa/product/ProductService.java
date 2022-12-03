@@ -37,6 +37,24 @@ public class ProductService {
         return new ProductsResponse(productDetailsResponses);
     }
 
+    public ProductsResponse showSellerProducts(long sellerId) {
+        List<Product> products = productRepository.findProductsBySellerId(sellerId);
+
+        List<ProductDetailsResponse> productDetailsResponses = products.stream()
+                .map(product -> new ProductDetailsResponse(
+                        product.getProductId(),
+                        product.getSellerId(),
+                        product.getCategory().name(),
+                        product.getPrice().getAmount(),
+                        product.getDescription(),
+                        product.getCreatedAt(),
+                        product.getUpdatedAt()
+                ))
+                .toList();
+
+        return new ProductsResponse(productDetailsResponses);
+    }
+
     public ProductDetailsResponse showProductDetails(long productId) {
         Optional<Product> maybeProduct = productRepository.findById(productId);
 
