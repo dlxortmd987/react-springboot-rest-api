@@ -20,6 +20,8 @@ import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.*;
 
+import static com.prgms.kdt.danawa.generic.utils.JdbcUtils.toLocalDateTime;
+
 @Repository
 public class OrderJdbcRepository implements OrderRepository {
 
@@ -60,14 +62,6 @@ public class OrderJdbcRepository implements OrderRepository {
                 "order_status", order.getOrderStatus().toString(),
                 "created_at", order.getCreatedAt()
         );
-    }
-
-    private static LocalDateTime toLocalDateTime(Timestamp timestamp) {
-        if (timestamp == null) {
-            return null;
-        } else {
-            return timestamp.toLocalDateTime();
-        }
     }
 
     public OrderJdbcRepository(NamedParameterJdbcTemplate jdbcTemplate) {

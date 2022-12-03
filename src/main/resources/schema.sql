@@ -1,4 +1,3 @@
-
 create table `order`
 (
     order_id     bigint auto_increment
@@ -12,3 +11,14 @@ create table `order`
     created_at   timestamp    null
 );
 
+create table product
+(
+    product_id     bigint auto_increment
+        primary key,
+    seller_id        bigint null,
+    category      varchar(20) null,
+    price     bigint   null,
+    description varchar(255)  null,
+    created_at   timestamp    null,
+    updated_at   timestamp    null
+);

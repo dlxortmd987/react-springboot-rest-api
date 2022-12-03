@@ -1,4 +1,4 @@
-create table IF NOT EXISTS `order`
+CREATE TABLE IF NOT EXISTS `order`
 (
     order_id     bigint auto_increment
         primary key,
@@ -11,3 +11,14 @@ create table IF NOT EXISTS `order`
     created_at   timestamp    null
 );
 
+CREATE TABLE IF NOT EXISTS product
+(
+    product_id     bigint auto_increment
+        primary key,
+    seller_id        bigint null,
+    category      varchar(20) null,
+    price     bigint   null,
+    description varchar(255)  null,
+    created_at   timestamp    null,
+    updated_at   timestamp    null
+);

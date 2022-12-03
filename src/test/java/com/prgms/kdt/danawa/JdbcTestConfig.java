@@ -2,6 +2,8 @@ package com.prgms.kdt.danawa;
 
 import com.prgms.kdt.danawa.order.repository.OrderJdbcRepository;
 import com.prgms.kdt.danawa.order.repository.OrderRepository;
+import com.prgms.kdt.danawa.product.repository.ProductJdbcRepository;
+import com.prgms.kdt.danawa.product.repository.ProductRepository;
 import com.zaxxer.hikari.HikariDataSource;
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.boot.test.context.TestConfiguration;
@@ -38,6 +40,11 @@ public class JdbcTestConfig {
     @Bean
     public OrderRepository orderRepository(NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
         return new OrderJdbcRepository(namedParameterJdbcTemplate);
+    }
+
+    @Bean
+    public ProductRepository productRepository(NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
+        return new ProductJdbcRepository(namedParameterJdbcTemplate);
     }
 
 }
