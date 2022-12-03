@@ -22,6 +22,10 @@ public class Money {
         return new Money(BigDecimal.valueOf(amount));
     }
 
+    public static Money of(BigDecimal price) {
+        return new Money(price);
+    }
+
     public BigDecimal getAmount() {
         return amount;
     }

@@ -61,7 +61,7 @@ public class ProductJdbcRepository implements ProductRepository {
     @Override
     public List<Product> findAll() {
         return jdbcTemplate.query(
-                "SELECT * FROM product LIMIT 20",
+                "SELECT * FROM product",
                 Collections.emptyMap(),
                 PRODUCT_ROW_MAPPER
         );

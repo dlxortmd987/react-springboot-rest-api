@@ -4,7 +4,6 @@ import com.prgms.kdt.danawa.JdbcTestConfig;
 import com.prgms.kdt.danawa.generic.domain.Money;
 import com.prgms.kdt.danawa.product.domain.Category;
 import com.prgms.kdt.danawa.product.domain.Product;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -19,7 +18,6 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(SpringExtension.class)
 @Import(JdbcTestConfig.class)

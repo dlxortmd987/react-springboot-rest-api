@@ -69,10 +69,12 @@ public class Product {
 
     public void changePrice(long price) {
         this.price = Money.of(price);
+        this.updatedAt = LocalDateTime.now();
     }
 
     public void changePrice(double price) {
         this.price = Money.of(price);
+        this.updatedAt = LocalDateTime.now();
     }
 
     @Override
