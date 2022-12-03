@@ -8,8 +8,8 @@ import jakarta.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-public class ProductDetailsRequest {
-    private long productId;
+public class ProductPostRequest {
+
     private long sellerId;
 
     @NotNull
@@ -21,20 +21,18 @@ public class ProductDetailsRequest {
     @NotNull
     private String description;
 
-    public ProductDetailsRequest() {
+    public ProductPostRequest() {
 
     }
 
-    public ProductDetailsRequest(long productId, long sellerId, String category, long price, String description) {
-        this.productId = productId;
+    public ProductPostRequest(long sellerId, String category, long price, String description) {
         this.sellerId = sellerId;
         this.category = category;
         this.price = BigDecimal.valueOf(price);
         this.description = description;
     }
 
-    public ProductDetailsRequest(long productId, long sellerId, String category, double price, String description) {
-        this.productId = productId;
+    public ProductPostRequest(long sellerId, String category, double price, String description) {
         this.sellerId = sellerId;
         this.category = category;
         this.price = BigDecimal.valueOf(price);
@@ -43,7 +41,6 @@ public class ProductDetailsRequest {
 
     public Product toProduct() {
         return new Product(
-                this.productId,
                 this.sellerId,
                 Category.valueOf(this.category),
                 Money.of(this.price),
@@ -51,10 +48,6 @@ public class ProductDetailsRequest {
                 LocalDateTime.now(),
                 LocalDateTime.now()
         );
-    }
-
-    public long getProductId() {
-        return productId;
     }
 
     public long getSellerId() {

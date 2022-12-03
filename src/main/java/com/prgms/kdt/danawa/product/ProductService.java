@@ -3,6 +3,7 @@ package com.prgms.kdt.danawa.product;
 import com.prgms.kdt.danawa.exception.EmptyResultException;
 import com.prgms.kdt.danawa.product.domain.Product;
 import com.prgms.kdt.danawa.product.dto.ProductDetailsRequest;
+import com.prgms.kdt.danawa.product.dto.ProductPostRequest;
 import com.prgms.kdt.danawa.product.repository.ProductRepository;
 import com.prgms.kdt.danawa.product.dto.ProductDetailsResponse;
 import com.prgms.kdt.danawa.product.dto.ProductsResponse;
@@ -72,6 +73,10 @@ public class ProductService {
                 foundProduct.getCreatedAt(),
                 foundProduct.getUpdatedAt()
         );
+    }
+
+    public void postProduct(ProductPostRequest productPostRequest) {
+        productRepository.insert(productPostRequest.toProduct());
     }
 
     public void modifyProduct(ProductDetailsRequest productDetailsRequest) {

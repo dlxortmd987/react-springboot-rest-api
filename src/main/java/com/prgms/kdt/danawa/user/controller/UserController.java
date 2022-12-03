@@ -1,11 +1,12 @@
 package com.prgms.kdt.danawa.user.controller;
 
-import com.prgms.kdt.danawa.configuration.BaseResponse;
 import com.prgms.kdt.danawa.product.ProductService;
 import com.prgms.kdt.danawa.product.dto.ProductDetailsRequest;
 import com.prgms.kdt.danawa.product.dto.ProductDetailsResponse;
+import com.prgms.kdt.danawa.product.dto.ProductPostRequest;
 import com.prgms.kdt.danawa.product.dto.ProductsResponse;
 import jakarta.validation.Valid;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -19,29 +20,35 @@ public class UserController {
     }
 
     @GetMapping
-    public BaseResponse<ProductsResponse> getProducts() {
-        return new BaseResponse<>(productService.showProducts());
+    public ResponseEntity<ProductsResponse> getProducts() {
+        return ResponseEntity.ok(productService.showProducts());
     }
 
     @GetMapping("/{productId}")
-    public BaseResponse<ProductDetailsResponse> getProductDetails(@PathVariable(value = "productId") long productId) {
-        return new BaseResponse<>(productService.showProductDetails(productId));
+    public ResponseEntity<ProductDetailsResponse> getProductDetails(@PathVariable(value = "productId") long productId) {
+        return ResponseEntity.ok(productService.showProductDetails(productId));
     }
 
-    @GetMapping("/{sellerId}")
-    public BaseResponse<ProductsResponse> getSellerProducts(@PathVariable(value = "sellerId") long sellerId) {
-        return new BaseResponse<>(productService.showSellerProducts(sellerId));
+    @GetMapping("/seller/{sellerId}")
+    public ResponseEntity<ProductsResponse> getSellerProducts(@PathVariable(value = "sellerId") long sellerId) {
+        return ResponseEntity.ok(productService.showSellerProducts(sellerId));
+    }
+
+    @PostMapping
+    public ResponseEntity<String> postProduct(@RequestBody ProductPostRequest productPostRequest) {
+        productService.postProduct(productPostRequest);
+        return ResponseEntity.ok("Post Success!");
     }
 
     @PatchMapping
-    public BaseResponse<String> modifyProduct(@RequestBody @Valid ProductDetailsRequest productDetailsRequest) {
+    public ResponseEntity<String> modifyProduct(@RequestBody @Valid ProductDetailsRequest productDetailsRequest) {
         productService.modifyProduct(productDetailsRequest);
-        return new BaseResponse<>("Modify Success!");
+        return ResponseEntity.ok("Modify Success!");
     }
 
     @DeleteMapping("/{productId}")
-    public BaseResponse<String> deleteProduct(@PathVariable(value = "productId") long productId) {
+    public ResponseEntity<String> deleteProduct(@PathVariable(value = "productId") long productId) {
         productService.deleteProduct(productId);
-        return new BaseResponse<>("Delete Success!");
+        return ResponseEntity.ok("Delete Success!");
     }
 }
