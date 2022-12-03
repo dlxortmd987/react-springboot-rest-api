@@ -1,5 +1,6 @@
 package com.prgms.kdt.danawa.product.repository;
 
+import com.prgms.kdt.danawa.exception.FailedUpdateException;
 import com.prgms.kdt.danawa.generic.domain.Money;
 import com.prgms.kdt.danawa.product.domain.Category;
 import com.prgms.kdt.danawa.product.domain.Product;
@@ -49,7 +50,6 @@ public class ProductJdbcRepository implements ProductRepository {
                 "description", product.getDescription(),
                 "created_at", product.getCreatedAt(),
                 "updated_at", product.getUpdatedAt()
-
         );
     }
 
@@ -109,7 +109,7 @@ public class ProductJdbcRepository implements ProductRepository {
                 toParamMap(product)
         );
         if (update != UPDATED_SIZE) {
-            throw new IncorrectResultSizeDataAccessException(UPDATED_SIZE, update);
+            throw new FailedUpdateException(UPDATED_SIZE, update);
         }
         return new Product(product.getProductId(), product.getSellerId(), product.getCategory(), product.getPrice(), product.getDescription(), product.getCreatedAt(), product.getUpdatedAt());
     }
@@ -119,7 +119,7 @@ public class ProductJdbcRepository implements ProductRepository {
         int update = jdbcTemplate.update(
                 "DELETE FROM product WHERE product_id = :product_id;", Collections.singletonMap("product_id", productId));
         if (update != UPDATED_SIZE) {
-            throw new IncorrectResultSizeDataAccessException(UPDATED_SIZE, update);
+            throw new FailedUpdateException(UPDATED_SIZE, update);
         }
     }
 
