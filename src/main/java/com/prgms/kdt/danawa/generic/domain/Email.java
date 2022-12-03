@@ -1,20 +1,35 @@
 package com.prgms.kdt.danawa.generic.domain;
 
-import org.springframework.util.Assert;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
-import static com.prgms.kdt.danawa.generic.utils.RegexUtils.checkRegex;
+import java.util.Objects;
 
-public record Email(String address) {
-    public static final String EMAIL_REGEX = "\\b[\\w\\.-]+@[\\w\\.-]+\\.\\w{2,4}\\b";
+public class Email {
 
-    public Email(String address) {
-        this.address = address;
-        validateAddress(address);
+    @Size(min = 8, max = 50)
+    @NotNull
+    @jakarta.validation.constraints.Email
+    private final String value;
+
+    public Email(String value) {
+        this.value = value;
     }
 
-    private static void validateAddress(String address) {
-        Assert.notNull(address, "address should not be null");
-        Assert.isTrue(address.length() >= 4 && address.length() <= 50, "address length must be between 4 and 50 characters.");
-        Assert.isTrue(checkRegex(EMAIL_REGEX, address), "Invalid email address");
+    public String getValue() {
+        return value;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Email email = (Email) o;
+        return Objects.equals(value, email.value);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(value);
     }
 }

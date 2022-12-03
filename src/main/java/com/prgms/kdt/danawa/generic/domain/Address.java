@@ -1,19 +1,38 @@
 package com.prgms.kdt.danawa.generic.domain;
 
-import org.springframework.util.Assert;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 
-import static com.prgms.kdt.danawa.generic.utils.RegexUtils.checkRegex;
+import java.util.Objects;
 
-public record Address(String value) {
-    public static final String ADDRESS_REGEX = "((([가-힣A-Za-z·\\d~\\-\\.]{2,}(로|길).[\\d]+)|([가-힣A-Za-z·\\d~\\-\\.]+(읍|동)\\s)[\\d]+))";
+public class Address {
+
+    private static final String ADDRESS_REGEX = "((([가-힣A-Za-z·\\d~\\-\\.]{2,}(로|길).[\\d]+)|([가-힣A-Za-z·\\d~\\-\\.]+(읍|동)\\s)[\\d]+))";
+
+    @Size(min = 4, max = 100)
+    @NotNull
+    @Pattern(regexp = ADDRESS_REGEX)
+    private final String value;
 
     public Address(String value) {
-        validateValue(value);
         this.value = value;
     }
 
-    private static void validateValue(String value) {
-        Assert.notNull(value, "address should not be null");
-        Assert.isTrue(checkRegex(ADDRESS_REGEX, value), "Invalid address value.");
+    public String getValue() {
+        return value;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Address address = (Address) o;
+        return Objects.equals(value, address.value);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(value);
     }
 }

@@ -1,29 +1,24 @@
 package com.prgms.kdt.danawa.generic.domain;
 
-import org.springframework.util.Assert;
+import jakarta.validation.constraints.DecimalMin;
 
 import java.math.BigDecimal;
 
 public class Money {
 
+    @DecimalMin(value = "0.0")
     private final BigDecimal amount;
 
     private Money(BigDecimal amount) {
-        validateAmount(amount);
         this.amount = amount;
-    }
-
-    private static void validateAmount(BigDecimal amount) {
-        Assert.isTrue(isPositiveAmount(amount), "Money amount should not be negative.");
-    }
-
-    private static boolean isPositiveAmount(BigDecimal amount) {
-        return amount.compareTo(BigDecimal.ZERO) > 0;
     }
 
     public static Money of(long amount) {
         return new Money(BigDecimal.valueOf(amount));
     }
 
+    public static Money of(double amount) {
+        return new Money(BigDecimal.valueOf(amount));
+    }
 
 }
