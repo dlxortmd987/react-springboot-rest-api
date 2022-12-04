@@ -109,4 +109,18 @@ public class Order {
         }
         this.orderStatus = OrderStatus.PAYED;
     }
+
+    public void cancel() {
+        if (this.orderStatus != OrderStatus.PAYED) {
+            throw new InvalidStatusException(this.orderStatus.name());
+        }
+        this.orderStatus = OrderStatus.CANCELLED;
+    }
+
+    public void deliver() {
+        if (this.orderStatus != OrderStatus.PAYED) {
+            throw new InvalidStatusException(this.orderStatus.name());
+        }
+        this.orderStatus = OrderStatus.DELIVERED;
+    }
 }

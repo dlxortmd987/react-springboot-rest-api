@@ -1,4 +1,4 @@
-package com.prgms.kdt.danawa.user.controller;
+package com.prgms.kdt.danawa.product.controller;
 
 import com.prgms.kdt.danawa.product.ProductService;
 import com.prgms.kdt.danawa.product.dto.ProductDetailsRequest;
@@ -10,12 +10,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/v1/users")
-public class UserController {
+@RequestMapping("/api/v1/products")
+public class ProductController {
 
     private final ProductService productService;
 
-    public UserController(ProductService productService) {
+    public ProductController(ProductService productService) {
         this.productService = productService;
     }
 

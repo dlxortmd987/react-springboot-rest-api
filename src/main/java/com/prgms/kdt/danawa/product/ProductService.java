@@ -63,15 +63,15 @@ public class ProductService {
             throw new EmptyResultException(String.format("Failed to find the Product. [Product ID]: %d", productId));
         }
 
-        Product foundProduct = maybeProduct.get();
+        Product product = maybeProduct.get();
         return new ProductDetailsResponse(
-                foundProduct.getProductId(),
-                foundProduct.getSellerId(),
-                foundProduct.getCategory().name(),
-                foundProduct.getPrice().getAmount(),
-                foundProduct.getDescription(),
-                foundProduct.getCreatedAt(),
-                foundProduct.getUpdatedAt()
+                product.getProductId(),
+                product.getSellerId(),
+                product.getCategory().name(),
+                product.getPrice().getAmount(),
+                product.getDescription(),
+                product.getCreatedAt(),
+                product.getUpdatedAt()
         );
     }
 
