@@ -7,12 +7,17 @@ import com.prgms.kdt.danawa.generic.domain.PostCode;
 import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 
 public class Order {
     private final long orderId;
     private final long customerId;
     private final long sellerId;
+
+    private final List<OrderItem> orderItems = new ArrayList<>();
 
     @NotNull
     private final Email email;
@@ -29,10 +34,11 @@ public class Order {
     @NotNull
     private final LocalDateTime createdAt;
 
-    public Order(long orderId, long customerId, long sellerId, Email email, Address address, PostCode postcode, OrderStatus orderStatus, LocalDateTime createdAt) {
+    public Order(long orderId, long customerId, long sellerId, List<OrderItem> orderItems, Email email, Address address, PostCode postcode, OrderStatus orderStatus, LocalDateTime createdAt) {
         this.orderId = orderId;
         this.customerId = customerId;
         this.sellerId = sellerId;
+        this.orderItems.addAll(orderItems);
         this.email = email;
         this.address = address;
         this.postcode = postcode;
@@ -40,8 +46,12 @@ public class Order {
         this.createdAt = createdAt;
     }
 
-    public Order(long customerId, long sellerId, Email email, Address address, PostCode postcode, OrderStatus orderStatus, LocalDateTime createdAt) {
-        this(0, customerId, sellerId, email, address, postcode, orderStatus, createdAt);
+    public Order(long customerId, long sellerId, List<OrderItem> orderItems, Email email, Address address, PostCode postcode, OrderStatus orderStatus, LocalDateTime createdAt) {
+        this(0, customerId, sellerId, orderItems, email, address, postcode, orderStatus, createdAt);
+    }
+
+    public Order(long orderId, long customerId, long sellerId, Email email, Address address, PostCode postcode, OrderStatus orderStatus, LocalDateTime createdAt) {
+        this(orderId, customerId, sellerId, Collections.emptyList(), email, address, postcode, orderStatus, createdAt);
     }
 
     public long getOrderId() {
@@ -54,6 +64,10 @@ public class Order {
 
     public long getSellerId() {
         return sellerId;
+    }
+
+    public List<OrderItem> getOrderItems() {
+        return orderItems;
     }
 
     public Email getEmail() {
@@ -81,26 +95,12 @@ public class Order {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Order order = (Order) o;
-        return orderId == order.orderId && customerId == order.customerId && sellerId == order.sellerId && Objects.equals(email, order.email) && Objects.equals(address, order.address) && Objects.equals(postcode, order.postcode) && orderStatus == order.orderStatus && Objects.equals(createdAt, order.createdAt);
+        return orderId == order.orderId && customerId == order.customerId && sellerId == order.sellerId && Objects.equals(orderItems, order.orderItems) && Objects.equals(email, order.email) && Objects.equals(address, order.address) && Objects.equals(postcode, order.postcode) && orderStatus == order.orderStatus && Objects.equals(createdAt, order.createdAt);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(orderId, customerId, sellerId, email, address, postcode, orderStatus, createdAt);
-    }
-
-    @Override
-    public String toString() {
-        return "Order{" +
-                "orderId=" + orderId +
-                ", customerId=" + customerId +
-                ", sellerId=" + sellerId +
-                ", email=" + email +
-                ", address=" + address +
-                ", postcode=" + postcode +
-                ", orderStatus=" + orderStatus +
-                ", createdAt=" + createdAt +
-                '}';
+        return Objects.hash(orderId, customerId, sellerId, orderItems, email, address, postcode, orderStatus, createdAt);
     }
 
     public void pay() {
@@ -122,5 +122,9 @@ public class Order {
             throw new InvalidStatusException(this.orderStatus.name());
         }
         this.orderStatus = OrderStatus.DELIVERED;
+    }
+
+    public void addItem(OrderItem orderItem) {
+        orderItems.add(orderItem);
     }
 }

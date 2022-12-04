@@ -1,26 +1,23 @@
 package com.prgms.kdt.danawa.order.repository;
 
-import com.prgms.kdt.danawa.generic.domain.Address;
-import com.prgms.kdt.danawa.generic.domain.Email;
-import com.prgms.kdt.danawa.generic.domain.PostCode;
 import com.prgms.kdt.danawa.order.domain.Order;
-import com.prgms.kdt.danawa.order.domain.OrderStatus;
+import com.prgms.kdt.danawa.order.domain.OrderItem;
+import com.prgms.kdt.danawa.order.utils.OrderJdbcUtils;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
-import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.*;
 
-import static com.prgms.kdt.danawa.generic.utils.JdbcUtils.toLocalDateTime;
+import static com.prgms.kdt.danawa.order.repository.OrderSql.*;
 
 @Repository
 public class OrderJdbcRepository implements OrderRepository {
@@ -29,29 +26,7 @@ public class OrderJdbcRepository implements OrderRepository {
     private static final int UPDATED_SIZE = 1;
     private final NamedParameterJdbcTemplate jdbcTemplate;
 
-    private static final RowMapper<Order> ORDER_ROW_MAPPER = (resultSet, i) -> {
-        long orderId = resultSet.getLong("order_id");
-        long customerId = resultSet.getLong("customer_id");
-        long sellerId = resultSet.getLong("seller_id");
-        Email email = new Email(resultSet.getString("email"));
-        Address address = new Address(resultSet.getString("address"));
-        PostCode postcode = new PostCode(resultSet.getString("postcode"));
-        OrderStatus orderStatus = OrderStatus.valueOf(resultSet.getString("order_status"));
-        LocalDateTime createdAt = toLocalDateTime(resultSet.getTimestamp("created_at"));
-
-        return new Order(
-                orderId,
-                customerId,
-                sellerId,
-                email,
-                address,
-                postcode,
-                orderStatus,
-                createdAt
-        );
-    };
-
-    private Map<String, Object> toParamMap(@Valid Order order) {
+    private Map<String, Object> toOrderParamMap(@Valid Order order) {
         return Map.of(
                 "order_id", order.getOrderId(),
                 "customer_id", order.getCustomerId(),
@@ -64,25 +39,36 @@ public class OrderJdbcRepository implements OrderRepository {
         );
     }
 
+    private MapSqlParameterSource toOrderItemParamMap(OrderItem item, long orderId, LocalDateTime createdAt) {
+        MapSqlParameterSource source = new MapSqlParameterSource();
+        source.addValue("order_id", orderId);
+        source.addValue("product_id", item.getProductId());
+        source.addValue("category", item.getCategory().name());
+        source.addValue("price", item.getPrice().getAmount().longValue());
+        source.addValue("quantity", item.getQuantity().getValue());
+        source.addValue("created_at", createdAt);
+        return source;
+    }
+
+
     public OrderJdbcRepository(NamedParameterJdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
     @Override
     public List<Order> findOrdersByCustomerId(long customerId) {
-        return jdbcTemplate.query("SELECT * FROM `order` WHERE customer_id = :customerId",
+        return jdbcTemplate.query(FIND_ORDERS_BY_CUSTOMER_ID.getSql(),
                 Collections.singletonMap("customerId", customerId),
-                ORDER_ROW_MAPPER
+                OrderJdbcUtils::getOrders
         );
     }
 
     @Override
     public Optional<Order> findById(long orderId) {
         try {
-            return Optional.of(jdbcTemplate.queryForObject("SELECT * FROM `order` WHERE order_id = :orderId",
+            return Optional.ofNullable(jdbcTemplate.query(FIND_BY_ID.getSql(),
                     Collections.singletonMap("orderId", orderId),
-                    ORDER_ROW_MAPPER
-            ));
+                    OrderJdbcUtils::getOrder));
         } catch (EmptyResultDataAccessException exception) {
             log.info("Not found Order. [order id]: " + orderId);
             return Optional.empty();
@@ -92,34 +78,52 @@ public class OrderJdbcRepository implements OrderRepository {
     @Override
     @Transactional(isolation = Isolation.SERIALIZABLE)
     public Order insert(Order order) {
-        int update = jdbcTemplate.update(
-                "INSERT INTO `order`(customer_id, seller_id, email, address, postcode, order_status, created_at) VALUES (:customer_id, :seller_id, :email, :address, :postcode, :order_status, :created_at)",
-                toParamMap(order));
+        long generatedId = insertOrder(order);
+        insertOrderItems(order.getOrderItems(), generatedId, order.getCreatedAt());
+
+        return new Order(generatedId, order.getCustomerId(), order.getSellerId(), order.getOrderItems(), order.getEmail(), order.getAddress(), order.getPostcode(), order.getOrderStatus(), order.getCreatedAt());
+    }
+
+    private long insertOrder(Order order) {
+        int update = jdbcTemplate.update(INSERT_ORDER.getSql(), toOrderParamMap(order));
         if (update != UPDATED_SIZE) {
             throw new IncorrectResultSizeDataAccessException(UPDATED_SIZE, update);
         }
 
-        Long generatedId = jdbcTemplate.queryForObject("SELECT last_insert_id()", Collections.emptyMap(), Long.class);
-        return new Order(generatedId, order.getCustomerId(), order.getSellerId(), order.getEmail(), order.getAddress(), order.getPostcode(), order.getOrderStatus(), order.getCreatedAt());
+        return Objects.requireNonNull(jdbcTemplate.queryForObject("SELECT last_insert_id()", Collections.emptyMap(), Long.class));
+    }
+
+    private void insertOrderItems(List<OrderItem> orderItems, long orderId, LocalDateTime createdAt) {
+        List<MapSqlParameterSource> params = new ArrayList<>();
+
+        orderItems.forEach(
+                orderItem -> params.add(toOrderItemParamMap(orderItem, orderId, createdAt))
+        );
+
+        jdbcTemplate.batchUpdate(
+                INSERT_ORDER_ITEMS.getSql(),
+                params.toArray(MapSqlParameterSource[]::new)
+        );
     }
 
 
     @Override
     public Order update(Order order) {
-        int update = jdbcTemplate.update(
-                        "UPDATE `order` SET customer_id = :customer_id, seller_id = :seller_id, email = :email, address = :address, postcode = :postcode, order_status = :order_status, created_at = :created_at" +
-                        " WHERE order_id = :order_id",
-                toParamMap(order));
+        updateOrder(order);
+
+        return new Order(order.getOrderId(), order.getCustomerId(), order.getSellerId(), order.getOrderItems(), order.getEmail(), order.getAddress(), order.getPostcode(), order.getOrderStatus(), order.getCreatedAt());
+    }
+
+    private void updateOrder(Order order) {
+        int update = jdbcTemplate.update(UPDATE_ORDER.getSql(), toOrderParamMap(order));
         if (update != UPDATED_SIZE) {
             throw new IncorrectResultSizeDataAccessException(UPDATED_SIZE, update);
         }
-        return new Order(order.getOrderId(), order.getCustomerId(), order.getSellerId(), order.getEmail(), order.getAddress(), order.getPostcode(), order.getOrderStatus(), order.getCreatedAt());
     }
 
     @Override
     public void delete(long orderId) {
-        int update = jdbcTemplate.update(
-                "DELETE FROM `order` WHERE order_id = :orderId;", Collections.singletonMap("orderId", orderId));
+        int update = jdbcTemplate.update(DELETE_ORDER.getSql(), Collections.singletonMap("orderId", orderId));
         if (update != UPDATED_SIZE) {
             throw new IncorrectResultSizeDataAccessException(UPDATED_SIZE, update);
         }
@@ -127,8 +131,7 @@ public class OrderJdbcRepository implements OrderRepository {
 
     @Override
     public void deleteAll() {
-        jdbcTemplate.update(
-                "TRUNCATE TABLE `order`", Collections.emptyMap());
+        jdbcTemplate.update(DELETE_ALL_ORDER.getSql(), Collections.emptyMap());
     }
 
 }

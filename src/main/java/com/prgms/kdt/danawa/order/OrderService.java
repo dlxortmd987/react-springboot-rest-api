@@ -2,6 +2,8 @@ package com.prgms.kdt.danawa.order;
 
 import com.prgms.kdt.danawa.exception.EmptyResultException;
 import com.prgms.kdt.danawa.order.domain.Order;
+import com.prgms.kdt.danawa.order.dto.OrderItemDetailsResponse;
+import com.prgms.kdt.danawa.order.dto.OrderItemsResponse;
 import com.prgms.kdt.danawa.order.dto.OrderPostRequest;
 import com.prgms.kdt.danawa.order.dto.OrdersResponse;
 import com.prgms.kdt.danawa.order.repository.OrderRepository;
@@ -9,7 +11,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class OrderService {
@@ -32,6 +33,7 @@ public class OrderService {
                         order.getOrderId(),
                         order.getCustomerId(),
                         order.getSellerId(),
+                        getOrderItems(order),
                         order.getEmail().getValue(),
                         order.getAddress().getValue(),
                         order.getPostcode().getNumber(),
@@ -42,6 +44,16 @@ public class OrderService {
         return new OrdersResponse(orderDetailsResponses);
     }
 
+    private static OrderItemsResponse getOrderItems(Order order) {
+        return new OrderItemsResponse(order.getOrderItems().stream()
+                .map(orderItem -> new OrderItemDetailsResponse(
+                        orderItem.getProductId(),
+                        orderItem.getCategory().name(),
+                        orderItem.getPrice().getAmount(),
+                        orderItem.getQuantity().getValue()
+                )).toList());
+    }
+
     public OrderDetailsResponse showOrderDetails(long orderId) {
         Order order = orderRepository.findById(orderId).orElseThrow(() -> new EmptyResultException(String.format("Failed to find the Order. [Order ID]: %d", orderId)));
 
@@ -49,6 +61,7 @@ public class OrderService {
                 order.getOrderId(),
                 order.getCustomerId(),
                 order.getSellerId(),
+                getOrderItems(order),
                 order.getEmail().getValue(),
                 order.getAddress().getValue(),
                 order.getPostcode().getNumber(),

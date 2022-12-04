@@ -33,7 +33,7 @@ public class ProductJdbcRepository implements ProductRepository {
         long productId = resultSet.getLong("product_id");
         long sellerId = resultSet.getLong("seller_id");
         Category category = Category.valueOf(resultSet.getString("category"));
-        Money price = Money.of(resultSet.getLong("price"));
+        Money price = Money.of(resultSet.getBigDecimal("price"));
         String description = resultSet.getString("description");
         LocalDateTime createdAt = toLocalDateTime(resultSet.getTimestamp("created_at"));
         LocalDateTime updatedAt = toLocalDateTime(resultSet.getTimestamp("updated_at"));

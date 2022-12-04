@@ -35,7 +35,7 @@ public class ProductController {
     }
 
     @PostMapping
-    public ResponseEntity<String> postProduct(@RequestBody ProductPostRequest productPostRequest) {
+    public ResponseEntity<String> postProduct(@RequestBody @Valid ProductPostRequest productPostRequest) {
         productService.postProduct(productPostRequest);
         return ResponseEntity.ok("Post Success!");
     }

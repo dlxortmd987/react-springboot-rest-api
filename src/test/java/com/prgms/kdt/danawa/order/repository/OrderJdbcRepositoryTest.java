@@ -1,25 +1,19 @@
 package com.prgms.kdt.danawa.order.repository;
 
 import com.prgms.kdt.danawa.JdbcTestConfig;
-import com.prgms.kdt.danawa.generic.domain.Address;
-import com.prgms.kdt.danawa.generic.domain.Email;
-import com.prgms.kdt.danawa.generic.domain.PostCode;
+import com.prgms.kdt.danawa.generic.domain.*;
 import com.prgms.kdt.danawa.order.domain.Order;
+import com.prgms.kdt.danawa.order.domain.OrderItem;
 import com.prgms.kdt.danawa.order.domain.OrderStatus;
-import org.junit.jupiter.api.BeforeAll;
+import com.prgms.kdt.danawa.product.domain.Category;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
-import org.springframework.context.annotation.Profile;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -44,8 +38,12 @@ class OrderJdbcRepositoryTest {
     @Test
     void findOrdersByCustomerId() {
         // given
-        Order order1 = new Order(1, 2, new Email("dlxortmd@gmail.com"), new Address("강송로 154"), new PostCode("10231"), OrderStatus.ORDERED, LocalDateTime.now());
-        Order order2 = new Order(1, 4, new Email("dlxortmd123@gmail.com"), new Address("강송로 175"), new PostCode("10212"), OrderStatus.PAYED, LocalDateTime.now());
+        OrderItem orderItem1 = new OrderItem(1, Category.CELLPHONE, Money.of(1000000L), new Quantity(1));
+        OrderItem orderItem2 = new OrderItem(2, Category.COMPUTER, Money.of(20000000L), new Quantity(2));
+        Order order1 = new Order(1, 2, List.of(orderItem1, orderItem2), new Email("dlxortmd@gmail.com"), new Address("강송로 154"), new PostCode("10231"), OrderStatus.ORDERED, LocalDateTime.now());
+
+        OrderItem orderItem3 = new OrderItem(3, Category.COMPUTER, Money.of(21000000L), new Quantity(1));
+        Order order2 = new Order(1, 4, List.of(orderItem3), new Email("dlxortmd123@gmail.com"), new Address("강송로 175"), new PostCode("10212"), OrderStatus.PAYED, LocalDateTime.now());
         Order insertedOrder1 = orderRepository.insert(order1);
         Order insertedOrder2 = orderRepository.insert(order2);
 
@@ -61,7 +59,9 @@ class OrderJdbcRepositoryTest {
     @Test
     void findById() {
         // test
-        Order order1 = new Order(1, 2, new Email("dlxortmd@gmail.com"), new Address("강송로 154"), new PostCode("10231"), OrderStatus.ORDERED, LocalDateTime.now());
+        OrderItem orderItem1 = new OrderItem(1, Category.CELLPHONE, Money.of(1000000L), new Quantity(1));
+        OrderItem orderItem2 = new OrderItem(2, Category.COMPUTER, Money.of(20000000L), new Quantity(2));
+        Order order1 = new Order(1, 2, List.of(orderItem1, orderItem2), new Email("dlxortmd@gmail.com"), new Address("강송로 154"), new PostCode("10231"), OrderStatus.ORDERED, LocalDateTime.now());
         Order insertedOrder1 = orderRepository.insert(order1);
 
         // when
@@ -90,7 +90,9 @@ class OrderJdbcRepositoryTest {
     @Test
     void insert() {
         // test
-        Order order1 = new Order(1, 2, new Email("dlxortmd@gmail.com"), new Address("강송로 154"), new PostCode("10231"), OrderStatus.ORDERED, LocalDateTime.now());
+        OrderItem orderItem1 = new OrderItem(1, Category.CELLPHONE, Money.of(1000000L), new Quantity(1));
+        OrderItem orderItem2 = new OrderItem(2, Category.COMPUTER, Money.of(20000000L), new Quantity(2));
+        Order order1 = new Order(1, 2, List.of(orderItem1, orderItem2), new Email("dlxortmd@gmail.com"), new Address("강송로 154"), new PostCode("10231"), OrderStatus.ORDERED, LocalDateTime.now());
 
         // when
         Order insertedOrder1 = orderRepository.insert(order1);
@@ -105,7 +107,9 @@ class OrderJdbcRepositoryTest {
     @Test
     void update() {
         // given
-        Order order1 = new Order(1, 2, new Email("dlxortmd@gmail.com"), new Address("강송로 154"), new PostCode("10231"), OrderStatus.ORDERED, LocalDateTime.now());
+        OrderItem orderItem1 = new OrderItem(1, Category.CELLPHONE, Money.of(1000000L), new Quantity(1));
+        OrderItem orderItem2 = new OrderItem(2, Category.COMPUTER, Money.of(20000000L), new Quantity(2));
+        Order order1 = new Order(1, 2, List.of(orderItem1, orderItem2), new Email("dlxortmd@gmail.com"), new Address("강송로 154"), new PostCode("10231"), OrderStatus.ORDERED, LocalDateTime.now());
         Order insertedOrder1 = orderRepository.insert(order1);
 
         // when
@@ -122,7 +126,9 @@ class OrderJdbcRepositoryTest {
     @Test
     void delete() {
         // given
-        Order order1 = new Order(1, 2, new Email("dlxortmd@gmail.com"), new Address("강송로 154"), new PostCode("10231"), OrderStatus.ORDERED, LocalDateTime.now());
+        OrderItem orderItem1 = new OrderItem(1, Category.CELLPHONE, Money.of(1000000L), new Quantity(1));
+        OrderItem orderItem2 = new OrderItem(2, Category.COMPUTER, Money.of(20000000L), new Quantity(2));
+        Order order1 = new Order(1, 2, List.of(orderItem1, orderItem2), new Email("dlxortmd@gmail.com"), new Address("강송로 154"), new PostCode("10231"), OrderStatus.ORDERED, LocalDateTime.now());
         Order insertedOrder1 = orderRepository.insert(order1);
 
         // when
