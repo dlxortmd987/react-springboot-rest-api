@@ -1,5 +1,6 @@
 package com.prgms.kdt.danawa.order.repository;
 
+import com.prgms.kdt.danawa.exception.FailedUpdateException;
 import com.prgms.kdt.danawa.order.domain.Order;
 import com.prgms.kdt.danawa.order.domain.OrderItem;
 import com.prgms.kdt.danawa.order.utils.OrderJdbcUtils;
@@ -7,7 +8,6 @@ import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -87,7 +87,7 @@ public class OrderJdbcRepository implements OrderRepository {
     private long insertOrder(Order order) {
         int update = jdbcTemplate.update(INSERT_ORDER.getSql(), toOrderParamMap(order));
         if (update != UPDATED_SIZE) {
-            throw new IncorrectResultSizeDataAccessException(UPDATED_SIZE, update);
+            throw new FailedUpdateException(UPDATED_SIZE, update);
         }
 
         return Objects.requireNonNull(jdbcTemplate.queryForObject("SELECT last_insert_id()", Collections.emptyMap(), Long.class));
@@ -117,7 +117,7 @@ public class OrderJdbcRepository implements OrderRepository {
     private void updateOrder(Order order) {
         int update = jdbcTemplate.update(UPDATE_ORDER.getSql(), toOrderParamMap(order));
         if (update != UPDATED_SIZE) {
-            throw new IncorrectResultSizeDataAccessException(UPDATED_SIZE, update);
+            throw new FailedUpdateException(UPDATED_SIZE, update);
         }
     }
 
@@ -125,7 +125,7 @@ public class OrderJdbcRepository implements OrderRepository {
     public void delete(long orderId) {
         int update = jdbcTemplate.update(DELETE_ORDER.getSql(), Collections.singletonMap("orderId", orderId));
         if (update != UPDATED_SIZE) {
-            throw new IncorrectResultSizeDataAccessException(UPDATED_SIZE, update);
+            throw new FailedUpdateException(UPDATED_SIZE, update);
         }
     }
 

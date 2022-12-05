@@ -34,19 +34,19 @@ public class OrderController {
         return ResponseEntity.ok("Order Placed!");
     }
 
-    @PutMapping("/{orderId}/cancel")
+    @PatchMapping("/{orderId}/cancel")
     public ResponseEntity<String> cancelOrder(@PathVariable(value = "orderId") long orderId) {
         orderService.cancelOrder(orderId);
         return ResponseEntity.ok("Order cancelled!");
     }
 
-    @PutMapping("/{orderId}/pay")
+    @PatchMapping("/{orderId}/pay")
     public ResponseEntity<String> payOrder(@PathVariable(value = "orderId") long orderId) {
         orderService.payOrder(orderId);
         return ResponseEntity.ok("Order payed!");
     }
 
-    @PutMapping("/{orderId}/deliver")
+    @PatchMapping("/{orderId}/deliver")
     public ResponseEntity<String> deliverOrder(@PathVariable(value = "orderId") long orderId) {
         orderService.deliverOrder(orderId);
         return ResponseEntity.ok("Order delivered!");

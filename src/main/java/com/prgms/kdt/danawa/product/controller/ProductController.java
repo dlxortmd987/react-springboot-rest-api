@@ -40,7 +40,7 @@ public class ProductController {
         return ResponseEntity.ok("Post Success!");
     }
 
-    @PatchMapping
+    @PutMapping
     public ResponseEntity<String> modifyProduct(@RequestBody @Valid ProductDetailsRequest productDetailsRequest) {
         productService.modifyProduct(productDetailsRequest);
         return ResponseEntity.ok("Modify Success!");

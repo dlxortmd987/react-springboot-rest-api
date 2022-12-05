@@ -4,6 +4,8 @@ import com.prgms.kdt.danawa.order.repository.OrderJdbcRepository;
 import com.prgms.kdt.danawa.order.repository.OrderRepository;
 import com.prgms.kdt.danawa.product.repository.ProductJdbcRepository;
 import com.prgms.kdt.danawa.product.repository.ProductRepository;
+import com.prgms.kdt.danawa.user.repository.UserJdbcRepository;
+import com.prgms.kdt.danawa.user.repository.UserRepository;
 import com.zaxxer.hikari.HikariDataSource;
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.boot.test.context.TestConfiguration;
@@ -47,4 +49,8 @@ public class JdbcTestConfig {
         return new ProductJdbcRepository(namedParameterJdbcTemplate);
     }
 
+    @Bean
+    public UserRepository userRepository(NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
+        return new UserJdbcRepository(namedParameterJdbcTemplate);
+    }
 }
